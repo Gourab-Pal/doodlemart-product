@@ -41,10 +41,24 @@ public class ProductController {
             String searchProductName,
             @RequestParam(defaultValue = "0")
             int page,
-            @RequestParam(defaultValue = "2")
-            int size
+            @RequestParam(defaultValue = "10")
+            int size,
+            @RequestParam(defaultValue = "createdAt")
+            String sortBy,
+            @RequestParam(defaultValue = "desc")
+            String sortDirection
     ) {
-        return productService.getAllProducts(status, currency, minPrice, maxPrice, searchProductName, page, size);
+        return productService.getAllProducts(
+                status,
+                currency,
+                minPrice,
+                maxPrice,
+                searchProductName,
+                page,
+                size,
+                sortBy,
+                sortDirection
+        );
     }
 
     @PostMapping("/create")
