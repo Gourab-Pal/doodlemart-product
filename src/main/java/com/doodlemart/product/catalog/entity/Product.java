@@ -98,4 +98,9 @@ public class Product {
     public OffsetDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    public void publish() {
+        this.status = ProductStatus.PUBLISHED;
+        this.updatedAt = OffsetDateTime.now();
+    }
 }
