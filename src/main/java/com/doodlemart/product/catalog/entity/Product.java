@@ -100,7 +100,18 @@ public class Product {
     }
 
     public void publish() {
+        if(this.status != ProductStatus.DRAFT) {
+            throw new IllegalStateException("Current product can not be published. Product must be in draft state");
+        }
         this.status = ProductStatus.PUBLISHED;
+        this.updatedAt = OffsetDateTime.now();
+    }
+
+    public void archive() {
+        if(this.status == ProductStatus.ARCHIVED) {
+            throw new IllegalStateException("Current product can not be archived. Product is already archived");
+        }
+        this.status = ProductStatus.ARCHIVED;
         this.updatedAt = OffsetDateTime.now();
     }
 

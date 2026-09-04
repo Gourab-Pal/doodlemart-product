@@ -4,11 +4,14 @@ import com.doodlemart.product.catalog.dto.ProductCreateRequest;
 import com.doodlemart.product.catalog.dto.ProductResponse;
 import com.doodlemart.product.catalog.dto.ProductUpdateRequest;
 import com.doodlemart.product.catalog.entity.Product;
+import com.doodlemart.product.catalog.entity.ProductStatus;
 import com.doodlemart.product.catalog.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -20,8 +23,18 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<Product> getAllProducts(
+            ProductStatus status,
+            String currency,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            String searchProductName
+    ) {
+        String lowerCasedSearchProductName = "";
+        if (searchProductName != null) {
+            lowerCasedSearchProductName = searchProductName.toLowerCase(Locale.ROOT);
+        }
+        return productRepository.findWithFilters(status, currency, minPrice, maxPrice, lowerCasedSearchProductName);
     }
 
     public ProductResponse createProduct(ProductCreateRequest request) {
@@ -51,10 +64,23 @@ public class ProductService {
     }
 
     @Transactional
+    public ProductResponse archiveProduct(UUID productId) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        product.archive();
+        Product savedProduct = productRepository.save(product);
+        return ProductResponse.from(savedProduct);
+    }
+
+    @Transactional
     public ProductResponse updateProduct(UUID productId, ProductUpdateRequest productUpdateRequest) {
         Product product = productRepository.findById(productId).orElseThrow();
         product.updateDetails(productUpdateRequest.description(), productUpdateRequest.price());
         Product savedProduct = productRepository.save(product);
         return ProductResponse.from(savedProduct);
+    }
+
+    @Transactional
+    public void deleteProduct(UUID productId) {
+        productRepository.deleteById(productId);
     }
 }
