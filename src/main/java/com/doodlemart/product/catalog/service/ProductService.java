@@ -7,6 +7,9 @@ import com.doodlemart.product.catalog.entity.Product;
 import com.doodlemart.product.catalog.entity.ProductStatus;
 import com.doodlemart.product.catalog.repository.ProductRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,18 +26,31 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<Product> getAllProducts(
+    public Page<ProductResponse> getAllProducts(
             ProductStatus status,
             String currency,
             BigDecimal minPrice,
             BigDecimal maxPrice,
-            String searchProductName
+            String searchProductName,
+            int page,
+            int size
     ) {
         String lowerCasedSearchProductName = "";
         if (searchProductName != null) {
             lowerCasedSearchProductName = searchProductName.toLowerCase(Locale.ROOT);
         }
-        return productRepository.findWithFilters(status, currency, minPrice, maxPrice, lowerCasedSearchProductName);
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Product> productPage = productRepository.findWithFilters(
+                status,
+                currency,
+                minPrice,
+                maxPrice,
+                lowerCasedSearchProductName,
+                pageable
+        );
+        return productPage.map(product -> ProductResponse.from(product));
     }
 
     public ProductResponse createProduct(ProductCreateRequest request) {

@@ -6,6 +6,7 @@ import com.doodlemart.product.catalog.dto.ProductUpdateRequest;
 import com.doodlemart.product.catalog.entity.Product;
 import com.doodlemart.product.catalog.entity.ProductStatus;
 import com.doodlemart.product.catalog.service.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponse> getProducts(
+    public Page<ProductResponse> getProducts(
             @RequestParam(required = false)
             ProductStatus status,
             @RequestParam(required = false)
@@ -37,13 +38,13 @@ public class ProductController {
             @RequestParam(required = false)
             BigDecimal maxPrice,
             @RequestParam(required = false)
-            String searchProductName
+            String searchProductName,
+            @RequestParam(defaultValue = "0")
+            int page,
+            @RequestParam(defaultValue = "2")
+            int size
     ) {
-        List<ProductResponse> responses = new ArrayList<>();
-        for(Product product : productService.getAllProducts(status, currency, minPrice, maxPrice, searchProductName)) {
-            responses.add(ProductResponse.from(product));
-        }
-        return responses;
+        return productService.getAllProducts(status, currency, minPrice, maxPrice, searchProductName, page, size);
     }
 
     @PostMapping("/create")
