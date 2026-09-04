@@ -103,4 +103,12 @@ public class Product {
         this.status = ProductStatus.PUBLISHED;
         this.updatedAt = OffsetDateTime.now();
     }
+
+    public void updateDetails(
+            String description, BigDecimal price
+    ) {
+        this.description = description;
+        this.price = price;
+        this.updatedAt = OffsetDateTime.now();
+    }
 }

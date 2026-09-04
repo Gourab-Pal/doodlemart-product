@@ -2,6 +2,7 @@ package com.doodlemart.product.catalog.service;
 
 import com.doodlemart.product.catalog.dto.ProductCreateRequest;
 import com.doodlemart.product.catalog.dto.ProductResponse;
+import com.doodlemart.product.catalog.dto.ProductUpdateRequest;
 import com.doodlemart.product.catalog.entity.Product;
 import com.doodlemart.product.catalog.repository.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -45,6 +46,14 @@ public class ProductService {
     public ProductResponse publishProduct(UUID productId) {
         Product product = productRepository.findById(productId).orElseThrow();
         product.publish();
+        Product savedProduct = productRepository.save(product);
+        return ProductResponse.from(savedProduct);
+    }
+
+    @Transactional
+    public ProductResponse updateProduct(UUID productId, ProductUpdateRequest productUpdateRequest) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        product.updateDetails(productUpdateRequest.description(), productUpdateRequest.price());
         Product savedProduct = productRepository.save(product);
         return ProductResponse.from(savedProduct);
     }
