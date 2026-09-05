@@ -6,14 +6,12 @@ import com.doodlemart.product.catalog.dto.ProductUpdateRequest;
 import com.doodlemart.product.catalog.entity.Product;
 import com.doodlemart.product.catalog.entity.ProductStatus;
 import com.doodlemart.product.catalog.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -63,7 +61,7 @@ public class ProductController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductResponse createProduct(@RequestBody ProductCreateRequest request) {
+    public ProductResponse createProduct(@Valid @RequestBody ProductCreateRequest request) {
         return productService.createProduct(request);
     }
 
