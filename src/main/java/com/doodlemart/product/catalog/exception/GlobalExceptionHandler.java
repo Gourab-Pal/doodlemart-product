@@ -7,9 +7,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -59,5 +59,15 @@ public class GlobalExceptionHandler {
         response.put("timestamp", OffsetDateTime.now());
 
         return response;
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleIllegalState(IllegalStateException exception) {
+        return Map.of(
+                "message", "Illegal status update occurred",
+                "exception", exception.getMessage(),
+                "timestamp", OffsetDateTime.now()
+        );
     }
 }
