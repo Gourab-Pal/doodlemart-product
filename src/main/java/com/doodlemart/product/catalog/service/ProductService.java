@@ -8,6 +8,8 @@ import com.doodlemart.product.catalog.entity.ProductStatus;
 import com.doodlemart.product.catalog.enums.ProductSortField;
 import com.doodlemart.product.catalog.exception.ProductNotFoundException;
 import com.doodlemart.product.catalog.repository.ProductRepository;
+import com.doodlemart.product.integration.kafka.ProductEventPublisher;
+import com.doodlemart.product.integration.kafka.event.ProductCreatedEvent;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,9 +26,14 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductEventPublisher productEventPublisher;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(
+            ProductRepository productRepository,
+            ProductEventPublisher productEventPublisher
+    ) {
         this.productRepository = productRepository;
+        this.productEventPublisher = productEventPublisher;
     }
 
     public Page<ProductResponse> getAllProducts(
@@ -74,6 +81,10 @@ public class ProductService {
         );
 
         Product savedProduct = productRepository.save(product);
+
+        ProductCreatedEvent event = new ProductCreatedEvent(savedProduct.getId());
+        productEventPublisher.publishProductCreated(event);
+
         return ProductResponse.from(savedProduct);
     }
 
